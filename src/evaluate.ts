@@ -3,9 +3,24 @@ import { isProviderEnabled } from './config.js';
 import { logger } from './logger.js';
 import type { DataSet, Question, EvaluationTask } from './types.js';
 
+// Serialises all write attempts through a single promise chain so concurrent
+// provider queues never race each other to the filesystem.
+class SerialWriter {
+  private tail: Promise<void> = Promise.resolve();
+
+  enqueue(fn: () => void): void {
+    this.tail = this.tail.then(() => fn());
+  }
+
+  drain(): Promise<void> {
+    return this.tail;
+  }
+}
+
 export async function runEvaluations(
   dataset: DataSet,
-  tasks: EvaluationTask[]
+  tasks: EvaluationTask[],
+  save: (dataset: DataSet) => void
 ): Promise<DataSet> {
   if (tasks.length === 0) {
     logger.info('No gaps found — dataset is complete.');
@@ -13,6 +28,9 @@ export async function runEvaluations(
   }
 
   logger.info(`Running ${tasks.length} evaluation(s)...`);
+
+  const writer = new SerialWriter();
+  const FAILURE_THRESHOLD = 3;
 
   // Group tasks by provider so each provider runs sequentially
   const byProvider = new Map<string, EvaluationTask[]>();
@@ -32,8 +50,6 @@ export async function runEvaluations(
     logger.info(`Provider "${provider}": ${providerTasks.length} task(s) queued`);
   }
 
-  const FAILURE_THRESHOLD = 3;
-
   // Run all provider queues in parallel (but each queue is sequential internally)
   const providerPromises = Array.from(byProvider.entries()).map(
     async ([provider, providerTasks]) => {
@@ -42,7 +58,7 @@ export async function runEvaluations(
       for (const task of providerTasks) {
         if (consecutiveFailures >= FAILURE_THRESHOLD) {
           logger.warn(
-            `Provider "${provider}" hit ${FAILURE_THRESHOLD} consecutive failures — skipping remaining ${providerTasks.length} task(s) for this session.`
+            `Provider "${provider}" hit ${FAILURE_THRESHOLD} consecutive failures — skipping remaining tasks for this session.`
           );
           break;
         }
@@ -60,7 +76,6 @@ export async function runEvaluations(
           // Mutate the question in-place (dataset.questions holds references)
           const q = dataset.questions.find((dq) => dq.id === task.question.id);
           if (q) {
-            // Remove any existing response for this model (shouldn't happen, but be safe)
             q.responses = q.responses.filter((r) => r.modelId !== task.modelId);
             q.responses.push({
               modelId: result.modelId,
@@ -71,6 +86,9 @@ export async function runEvaluations(
 
           consecutiveFailures = 0;
           logger.success(`${label} → "${result.selection}"`);
+
+          // Persist immediately through the serial writer
+          writer.enqueue(() => save(dataset));
         } catch (err) {
           consecutiveFailures++;
           logger.error(
@@ -83,6 +101,8 @@ export async function runEvaluations(
   );
 
   await Promise.all(providerPromises);
+  // Wait for any in-flight write to finish before returning
+  await writer.drain();
   return dataset;
 }
 

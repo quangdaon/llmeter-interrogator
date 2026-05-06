@@ -48,12 +48,11 @@ async function main() {
     }
   }
 
-  // Step 5: Evaluate gaps
+  // Step 5: Evaluate gaps — results are written to disk as they arrive
   const tasks = findGaps(questions, models);
-  await runEvaluations(dataset, tasks);
+  await runEvaluations(dataset, tasks, saveDataSet);
 
-  // Step 6: Save results
-  logger.info('Saving dataset to webapp...');
+  // Step 6: Final save — persists model metadata and updates generatedAt
   saveDataSet(dataset);
   logger.success(`Dataset written with ${questions.length} question(s), ${models.length} model(s)`);
 
