@@ -4,15 +4,10 @@
       name: Gemma 3
       logo: /images/models/google.svg
       color: '#4285F4'
-    - id: gemma4
-      name: Gemma 4
-      logo: /images/models/google.svg
-      color: '#4285F4'
     - id: llama3.1
       name: Llama 3.1
       logo: /images/models/meta.svg
       color: '#0082FB'
-
 - provider: Gemini
   models:
     - id: gemini-2.5-pro
@@ -23,15 +18,6 @@
       name: Gemini 2.5 Flash
       logo: /images/models/google.svg
       color: '#4285F4'
-    - id: gemini-3.1-pro-preview
-      name: Gemini 3.1 Pro (Preview)
-      logo: /images/models/google.svg
-      color: '#4285F4'
-    - id: gemini-3.1-flash-lite-preview
-      name: Gemini 3.1 Flash Lite (Preview)
-      logo: /images/models/google.svg
-      color: '#4285F4'
-
 - provider: OpenAI
   models:
     - id: gpt-5.5
@@ -46,15 +32,10 @@
       name: GPT-4.1 Mini
       logo: /images/models/openai.svg
       color: '#10A37F'
-
 - provider: Anthropic
   models:
     - id: claude-opus-4-7
       name: Claude Opus 4.7
-      logo: /images/models/anthropic.svg
-      color: '#D97757'
-    - id: claude-opus-4-6
-      name: Claude Opus 4.6
       logo: /images/models/anthropic.svg
       color: '#D97757'
     - id: claude-sonnet-4-6

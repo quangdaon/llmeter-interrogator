@@ -3,13 +3,39 @@ import { isProviderEnabled } from './config.js';
 import { logger } from './logger.js';
 import type { DataSet, Question, EvaluationTask } from './types.js';
 
-// Serialises all write attempts through a single promise chain so concurrent
-// provider queues never race each other to the filesystem.
-class SerialWriter {
+// Coalescing writer: if a write is already in progress, incoming requests set a
+// dirty flag instead of queuing individually. When the write finishes it checks
+// the flag and does exactly one follow-up write covering all accumulated data.
+// At most two writes ever run back-to-back, regardless of result volume.
+//
+// The setImmediate yield after the sync write is what makes coalescing real:
+// it holds `writing = true` while returning control to the event loop, so any
+// provider results that resolved concurrently can call enqueue, see the flag,
+// and mark dirty — rather than each kicking off its own write.
+class CoalescingWriter {
+  private writing = false;
+  private dirty = false;
   private tail: Promise<void> = Promise.resolve();
 
   enqueue(fn: () => void): void {
-    this.tail = this.tail.then(() => fn());
+    if (this.writing) {
+      this.dirty = true;
+      return;
+    }
+    this.tail = this.run(fn);
+  }
+
+  private async run(fn: () => void): Promise<void> {
+    this.writing = true;
+    this.dirty = false;
+    fn();
+    // Yield to the event loop before checking dirty. Without this, the dirty
+    // check is synchronous and no concurrent enqueue can ever set the flag.
+    await new Promise<void>((resolve) => setImmediate(resolve));
+    this.writing = false;
+    if (this.dirty) {
+      await this.run(fn);
+    }
   }
 
   drain(): Promise<void> {
@@ -29,7 +55,7 @@ export async function runEvaluations(
 
   logger.info(`Running ${tasks.length} evaluation(s)...`);
 
-  const writer = new SerialWriter();
+  const writer = new CoalescingWriter();
   const FAILURE_THRESHOLD = 3;
 
   // Group tasks by provider so each provider runs sequentially

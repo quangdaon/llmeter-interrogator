@@ -1,13 +1,13 @@
-import type { ProviderResult } from '../types.js';
+import type { ProviderResult } from "../types.js";
 
 export function buildPrompt(question: string, options: string[]): string {
-  const optionsList = options
-    .map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`)
-    .join('\n');
+  const optionsList = options.map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join("\n");
 
   return `You are an AI assistant participating in a fun personality quiz. Your task is to answer a multiple-choice question by selecting exactly one of the provided options.
 
 IMPORTANT: You MUST select one of the exact options listed. Do not refuse, hedge, or provide alternative answers. The quiz is designed to explore what choices AI models would make if they had preferences.
+
+Avoid phrases like "as an AI" in your response. We know you are an AI, keep your reasoning concise and direct.
 
 Question: ${question}
 
@@ -44,13 +44,12 @@ function findClosestOption(text: string, options: string[]): string | null {
   return null;
 }
 
-export function parseResponse(
-  raw: string,
-  options: string[],
-  modelId: string
-): ProviderResult {
+export function parseResponse(raw: string, options: string[], modelId: string): ProviderResult {
   // Strip markdown code fences if present
-  const cleaned = raw.replace(/```json?\n?/gi, '').replace(/```/g, '').trim();
+  const cleaned = raw
+    .replace(/```json?\n?/gi, "")
+    .replace(/```/g, "")
+    .trim();
 
   let parsed: { selection?: string; reasoning?: string } = {};
 
@@ -70,14 +69,14 @@ export function parseResponse(
   }
 
   const selection = parsed.selection
-    ? findClosestOption(parsed.selection, options) ?? parsed.selection
+    ? (findClosestOption(parsed.selection, options) ?? parsed.selection)
     : null;
 
-  const reasoning = parsed.reasoning ?? '';
+  const reasoning = parsed.reasoning ?? "";
 
   if (!selection) {
     throw new Error(
-      `${modelId}: Could not parse a valid selection from response: ${raw.slice(0, 200)}`
+      `${modelId}: Could not parse a valid selection from response: ${raw.slice(0, 200)}`,
     );
   }
 
@@ -87,7 +86,7 @@ export function parseResponse(
     const fuzzy = findClosestOption(selection, options);
     if (!fuzzy) {
       throw new Error(
-        `${modelId}: Selection "${selection}" does not match any option in [${options.join(', ')}]`
+        `${modelId}: Selection "${selection}" does not match any option in [${options.join(", ")}]`,
       );
     }
     return { modelId, selection: fuzzy, reasoning };
