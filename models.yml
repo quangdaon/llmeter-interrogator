@@ -1,0 +1,39 @@
+- provider: Ollama
+  models:
+    - id: gemma3
+      name: Gemma 3
+    - id: gemma4
+      name: Gemma 4
+    - id: llama3.1
+      name: Llama 3.1
+
+- provider: Gemini
+  models:
+    - id: gemini-3.1-pro-preview
+      name: Gemini 3.1 Pro (Preview)
+    - id: gemini-3.1-flash-lite-preview
+      name: Gemini 3.1 Flash Lite (Preview)
+    - id: gemini-2.5-pro
+      name: Gemini 2.5 Pro
+    - id: gemini-2.5-flash
+      name: Gemini 2.5 Flash
+
+- provider: OpenAI
+  models:
+    - id: gpt-5.5
+      name: GPT-5.5
+    - id: gpt-4.1
+      name: GPT-4.1
+    - id: gpt-4.1-mini
+      name: GPT-4.1 Mini
+
+- provider: Anthropic
+  models:
+    - id: claude-opus-4-7
+      name: Claude Opus 4.7
+    - id: claude-opus-4-6
+      name: Claude Opus 4.6
+    - id: claude-sonnet-4-6
+      name: Claude Sonnet 4.6
+    - id: claude-haiku-4-5-20251001
+      name: Claude Haiku 4.5

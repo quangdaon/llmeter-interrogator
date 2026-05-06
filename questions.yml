@@ -1,0 +1,73 @@
+- question: "Do you sleep with socks on?"
+  options:
+    - No way
+    - Heck yeah!
+
+- question: "Is a hotdog a sandwich?"
+  options:
+    - Yes
+    - No
+
+- question: "You have to sleep in a bunk bed, are you choosing top or bottom bunk?"
+  options:
+    - Top bunk
+    - Bottom bunk
+
+- question: "Do you sleep with a top sheet on your bed?"
+  options:
+    - Yes
+    - No
+    - Sheets??
+    - I don't have a bed.
+
+- question: "What is your favorite day of the week?"
+  options:
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+    - Sunday
+
+- question: "What's the right way to eat string cheese?"
+  options:
+    - Peel it
+    - Bite it
+    - I hate cheese 😡
+
+- question: "What's the right way to hang a toilet paper roll?"
+  options:
+    - Paper goes over
+    - Paper goes under
+
+- question: "Would you rather be able to fly or be invisible?"
+  options:
+    - Be able to fly
+    - Ability to be invisible
+
+- question: "What soap do you prefer in the shower/bath?"
+  options:
+    - Bar Soap 🧼
+    - Liquid Soap 🫧
+    - 3 in 1 (shampoo, conditioner, body wash) Soap
+    - No Soap
+
+- question: "You're eating cereal...what's your preferred order?"
+  options:
+    - Cereal then milk
+    - Milk then cereal
+
+- question: "Do cups belong facing up or facing down in the cabinet?"
+  options:
+    - Facing Up
+    - Facing Down
+
+- question: "What's the relationship between the washer and dryer?"
+  options:
+    - Friends
+    - Lovers
+    - Coworkers
+    - Archenemies
+    - Strangers
+    - Siblings
