@@ -21,8 +21,7 @@ export async function callOpenAI(
   const response = await getClient().chat.completions.create({
     model: modelId,
     messages: [{ role: 'user', content: prompt }],
-    temperature: 0.7,
-    max_tokens: 512,
+    max_completion_tokens: 512,
     response_format: { type: 'json_object' },
   });
   const content = response.choices[0]?.message?.content ?? '';

@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { config } from './config.js';
 
-const LOG_FILE = path.join(config.logsPath, 'results.log');
+const RUN_TIMESTAMP = new Date().toISOString().replace(/[:.]/g, '-').replace('T', '_').slice(0, 19);
+const LOG_FILE = path.join(config.logsPath, `results_${RUN_TIMESTAMP}.log`);
 
 function timestamp(): string {
   return new Date().toISOString();
