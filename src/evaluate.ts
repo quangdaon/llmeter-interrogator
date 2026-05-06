@@ -32,10 +32,21 @@ export async function runEvaluations(
     logger.info(`Provider "${provider}": ${providerTasks.length} task(s) queued`);
   }
 
+  const FAILURE_THRESHOLD = 3;
+
   // Run all provider queues in parallel (but each queue is sequential internally)
   const providerPromises = Array.from(byProvider.entries()).map(
     async ([provider, providerTasks]) => {
+      let consecutiveFailures = 0;
+
       for (const task of providerTasks) {
+        if (consecutiveFailures >= FAILURE_THRESHOLD) {
+          logger.warn(
+            `Provider "${provider}" hit ${FAILURE_THRESHOLD} consecutive failures — skipping remaining ${providerTasks.length} task(s) for this session.`
+          );
+          break;
+        }
+
         const label = `[${provider}/${task.modelId}] "${task.question.text.slice(0, 50)}..."`;
         try {
           logger.info(`Evaluating ${label}`);
@@ -58,10 +69,14 @@ export async function runEvaluations(
             });
           }
 
+          consecutiveFailures = 0;
           logger.success(`${label} → "${result.selection}"`);
         } catch (err) {
-          logger.error(`Failed ${label}`, err);
-          // Skip and continue — will be picked up on next run
+          consecutiveFailures++;
+          logger.error(
+            `Failed ${label} (${consecutiveFailures}/${FAILURE_THRESHOLD} consecutive)`,
+            err
+          );
         }
       }
     }
