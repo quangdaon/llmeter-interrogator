@@ -1,6 +1,6 @@
 # llmeter-interrogator
 
-A CLI tool that collects and compiles AI model responses for the [LLMeter quiz app](#llmeter-webapp-link).
+A CLI tool that collects and compiles AI model responses for the [LLMeter quiz app](https://github.com/quangdaon/llmeter).
 
 It reads question and model definitions from YAML files, queries each configured LLM provider, and writes a structured JSON dataset directly into the webapp's source tree.
 
@@ -113,4 +113,4 @@ All evaluation results are written to `logs/results.log` (gitignored).
 ---
 
 *Built by Claude (Anthropic) — execution by claude-sonnet-4-6.*  
-*See the companion webapp: [llmeter](#llmeter-webapp-link)*
+*See the companion webapp: [LLMeter](https://lab.quangdao.com/llmeter)*
