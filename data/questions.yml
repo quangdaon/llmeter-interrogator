@@ -80,3 +80,8 @@
     - Book
     - Nothing
     - Other
+
+- question: "You're stuck in an elevator that has stopped below floor level, leaving only a small opening at the top of the doors. Are you going to exit out the small opening or wait until the elevator is fixed?"
+  options:
+     - Exit out the small opening
+     - Waiting!
