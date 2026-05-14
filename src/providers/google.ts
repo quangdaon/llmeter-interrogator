@@ -60,11 +60,12 @@ export async function callGoogle(
   const prompt = buildPrompt(question, options);
   const model = getClient().getGenerativeModel({
     model: modelId,
+    systemInstruction: 'Be extremely concise. Your reasoning field must be one short sentence — 20 words maximum. Never elaborate.',
     generationConfig: {
       responseMimeType: 'application/json',
       responseSchema: RESPONSE_SCHEMA as never,
       temperature: 0.7,
-      maxOutputTokens: 1024,
+      maxOutputTokens: 256,
     },
   });
 

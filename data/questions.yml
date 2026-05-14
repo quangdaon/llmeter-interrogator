@@ -85,3 +85,25 @@
   options:
      - Exit out the small opening
      - Waiting!
+
+- question: "How often do you get a haircut? ✂️ "
+  options:
+    - 4-6 weeks
+    - Every few months or so
+    - Once a year
+    - ✨Never✨
+    - I'm bald 🔮
+    - No schedule. I do what I want when I want! 🤟🏼
+
+- question: "What kind of milk do you drink?"
+  options:
+    - 1%
+    - 2%
+    - Whole
+    - Skim
+    - Almond
+    - Coconut
+    - Oat
+    - Cashew
+    - I don't like milk
+    - Other

@@ -15,6 +15,8 @@ const MODEL_LOGO_MAP: Record<string, { logoId: string; color: string }> = {
   'gemma': { logoId: 'google', color: '#4285F4' },
   // Meta Llama models (via Ollama)
   'llama': { logoId: 'meta', color: '#0082FB' },
+  // Mistral models (via Ollama)
+  'mistral': { logoId: 'mistral', color: '#FF7000' },
 };
 
 const LOGO_PLACEHOLDER_URLS: Record<string, string> = {
@@ -22,6 +24,7 @@ const LOGO_PLACEHOLDER_URLS: Record<string, string> = {
   anthropic: 'https://placehold.co/128x128/D97757/FFFFFF.png?text=Claude',
   google: 'https://placehold.co/128x128/1A73E8/FFFFFF.png?text=Google',
   meta: 'https://placehold.co/128x128/0082FB/FFFFFF.png?text=Meta',
+  mistral: 'https://placehold.co/128x128/FF7000/FFFFFF.png?text=Mistral',
   placeholder: 'https://placehold.co/128x128/888888/FFFFFF.png?text=AI',
 };
 
