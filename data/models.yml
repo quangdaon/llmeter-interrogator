@@ -4,6 +4,10 @@
       name: Gemma 3
       logo: /images/models/google.svg
       color: '#4285F4'
+    - id: gemma4
+      name: Gemma 4
+      logo: /images/models/google.svg
+      color: '#4285F4'
     - id: llama3.1
       name: Llama 3.1
       logo: /images/models/meta.svg

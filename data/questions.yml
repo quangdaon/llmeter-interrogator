@@ -107,3 +107,8 @@
     - Cashew
     - I don't like milk
     - Other
+
+- question: Would you rather...
+  options:
+    - never have to go to the bathroom again
+    - never have to sleep again
