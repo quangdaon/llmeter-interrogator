@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.52.0",
-    "@google/generative-ai": "^0.24.0",
+    "@google/genai": "^2.4.0",
     "dotenv": "^16.4.0",
     "js-yaml": "^4.1.0",
     "ollama": "^0.5.13",

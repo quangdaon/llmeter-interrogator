@@ -1,46 +1,27 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { config } from '../config.js';
 import { buildPrompt, parseResponse } from './shared.js';
+import { logger } from '../logger.js';
 import type { ProviderResult } from '../types.js';
 
-let genAI: GoogleGenerativeAI | null = null;
+let genAI: GoogleGenAI | null = null;
 
-function getClient(): GoogleGenerativeAI {
+function getClient(): GoogleGenAI {
   if (!genAI) {
-    genAI = new GoogleGenerativeAI(config.googleApiKey);
+    genAI = new GoogleGenAI({ apiKey: config.googleApiKey });
   }
   return genAI;
 }
 
 function isTransient(err: unknown): boolean {
   const msg = String(err);
-  return msg.includes('503') || msg.includes('Service Unavailable') || msg.includes('529');
-}
-
-// Retries on transient HTTP errors AND on empty content (known gemini-2.5-pro bug).
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  isEmpty: (result: T) => boolean,
-  maxAttempts = 4
-): Promise<T> {
-  let lastErr: unknown;
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    let result: T;
-    try {
-      result = await fn();
-    } catch (err) {
-      lastErr = err;
-      if (!isTransient(err) || attempt === maxAttempts) throw err;
-      await new Promise((resolve) => setTimeout(resolve, 2000 * Math.pow(2, attempt - 1)));
-      continue;
-    }
-    if (!isEmpty(result)) return result;
-    lastErr = new Error('Empty response (known gemini-2.5-pro intermittent issue)');
-    if (attempt < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
-    }
-  }
-  throw lastErr;
+  return (
+    msg.includes('503') ||
+    msg.includes('Service Unavailable') ||
+    msg.includes('529') ||
+    msg.includes('500') ||
+    msg.includes('Internal Server Error')
+  );
 }
 
 const RESPONSE_SCHEMA = {
@@ -58,42 +39,67 @@ export async function callGoogle(
   options: string[]
 ): Promise<ProviderResult> {
   const prompt = buildPrompt(question, options);
-  const model = getClient().getGenerativeModel({
-    model: modelId,
-    systemInstruction: 'Be extremely concise. Your reasoning field must be one short sentence — 20 words maximum. Never elaborate.',
-    generationConfig: {
-      responseMimeType: 'application/json',
-      responseSchema: RESPONSE_SCHEMA as never,
-      temperature: 0.7,
-      maxOutputTokens: 256,
-    },
-  });
+  const client = getClient();
+  const maxAttempts = 4;
+  let lastErr: unknown;
 
-  const result = await withRetry(
-    () => model.generateContent(prompt),
-    (r) => {
-      const candidate = r.response.candidates?.[0];
-      if (!candidate) return true;
-      if (candidate.finishReason === 'SAFETY' || candidate.finishReason === 'RECITATION') return false;
-      return !r.response.text().trim();
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let response;
+    try {
+      response = await client.models.generateContent({
+        model: modelId,
+        contents: prompt,
+        config: {
+          systemInstruction:
+            'Be extremely concise. Your reasoning field must be one short sentence — 20 words maximum. Never elaborate.',
+          responseMimeType: 'application/json',
+          responseSchema: RESPONSE_SCHEMA as never,
+          temperature: 0.7,
+          maxOutputTokens: 2048,
+          thinkingConfig: {
+            // Small fixed budget: dynamic thinking is the default but can
+            // produce empty content with finishReason STOP on gemini-2.5-pro.
+            // A low explicit budget is the recommended mitigation.
+            thinkingBudget: 1024,
+          },
+        },
+      });
+    } catch (err) {
+      lastErr = err;
+      if (!isTransient(err) || attempt === maxAttempts) throw err;
+      const delay = 2000 * Math.pow(2, attempt - 1);
+      logger.warn(
+        `${modelId}: transient error on attempt ${attempt}/${maxAttempts}, retrying in ${delay}ms — ${String(err)}`
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      continue;
     }
-  );
 
-  const candidate = result.response.candidates?.[0];
-  if (!candidate) {
-    throw new Error(`${modelId}: No candidates in response`);
-  }
-  if (candidate.finishReason === 'SAFETY' || candidate.finishReason === 'RECITATION') {
-    throw new Error(`${modelId}: Response blocked (finishReason: ${candidate.finishReason})`);
-  }
-  if (candidate.finishReason === 'MAX_TOKENS') {
-    throw new Error(`${modelId}: Response truncated — increase maxOutputTokens`);
+    const candidate = response.candidates?.[0];
+    const finishReason = candidate?.finishReason ?? 'UNKNOWN';
+
+    if (finishReason === 'SAFETY' || finishReason === 'RECITATION') {
+      throw new Error(`${modelId}: Response blocked (finishReason: ${finishReason})`);
+    }
+    if (finishReason === 'MAX_TOKENS') {
+      throw new Error(`${modelId}: Response truncated — increase maxOutputTokens`);
+    }
+
+    const content = response.text ?? '';
+    if (!content.trim()) {
+      lastErr = new Error(
+        `${modelId}: Empty response on attempt ${attempt}/${maxAttempts} (finishReason: ${finishReason}, candidates: ${response.candidates?.length ?? 0})`
+      );
+      logger.warn(String(lastErr));
+      if (attempt < maxAttempts) {
+        const delay = 1000 * attempt;
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+      continue;
+    }
+
+    return parseResponse(content, options, modelId);
   }
 
-  const content = result.response.text();
-  if (!content.trim()) {
-    throw new Error(`${modelId}: Empty response after retries (finishReason: ${candidate.finishReason})`);
-  }
-
-  return parseResponse(content, options, modelId);
+  throw lastErr ?? new Error(`${modelId}: Failed after ${maxAttempts} attempts`);
 }
