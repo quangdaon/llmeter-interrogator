@@ -15,9 +15,10 @@ function getClient(): Ollama {
 export async function callOllama(
   modelId: string,
   question: string,
-  options: string[]
+  options: string[],
+  additionalInstructions?: string
 ): Promise<ProviderResult> {
-  const prompt = buildPrompt(question, options);
+  const prompt = buildPrompt(question, options, additionalInstructions);
   const response = await getClient().chat({
     model: modelId,
     messages: [{ role: 'user', content: prompt }],

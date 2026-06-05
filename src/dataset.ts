@@ -81,10 +81,14 @@ export function buildQuestions(
 
 export function findGaps(
   questions: Question[],
-  models: Model[]
-): Array<{ question: Question; modelId: string; provider: string }> {
-  const gaps: Array<{ question: Question; modelId: string; provider: string }> =
+  models: Model[],
+  yamlQuestions: YamlQuestion[] = []
+): Array<{ question: Question; modelId: string; provider: string; additionalInstructions?: string }> {
+  const gaps: Array<{ question: Question; modelId: string; provider: string; additionalInstructions?: string }> =
     [];
+  const instructionsMap = new Map(
+    yamlQuestions.map((yq) => [makeId(yq.question), yq.additionalInstructions])
+  );
 
   // Priority ordering per spec: get one response per provider per question before
   // circling back. Build a map: provider → models in order.
@@ -106,7 +110,12 @@ export function findGaps(
       for (const question of questions) {
         const hasResponse = question.responses.some((r) => r.modelId === model.id);
         if (!hasResponse) {
-          gaps.push({ question, modelId: model.id, provider: model.provider });
+          gaps.push({
+            question,
+            modelId: model.id,
+            provider: model.provider,
+            additionalInstructions: instructionsMap.get(question.id),
+          });
         }
       }
     }

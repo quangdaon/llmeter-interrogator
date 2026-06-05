@@ -96,7 +96,8 @@ export async function runEvaluations(
             provider,
             task.modelId,
             task.question.text,
-            task.question.options
+            task.question.options,
+            task.additionalInstructions
           );
 
           // Mutate the question in-place (dataset.questions holds references)

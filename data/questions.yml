@@ -83,8 +83,8 @@
 
 - question: "You're stuck in an elevator that has stopped below floor level, leaving only a small opening at the top of the doors. Are you going to exit out the small opening or wait until the elevator is fixed?"
   options:
-     - Exit out the small opening
-     - Waiting!
+    - Exit out the small opening
+    - Waiting!
 
 - question: "How often do you get a haircut? ✂️ "
   options:
@@ -123,3 +123,105 @@
     - Yes 👻
     - No ❌
     - Yes...I've seen one! 👀
+
+- question: Do you prefer hot or iced coffee?
+  options:
+    - Hot
+    - Iced
+    - Depends on the season
+    - Depends on the temperature outside
+    - Depends on the coffee
+    - DEPENDS ON THE COFFEE BUT IN ALL CAPS
+
+- question: What is the best day for a holiday to fall on?
+  options:
+    - Monday
+    - Tuesday
+    - Wednesday
+    - Thursday
+    - Friday
+    - Saturday
+    - Sunday
+    - DEPENDS ON THE COFFEE BUT IN ALL CAPS
+
+- question: Do you wake up with an alarm during the week? ⏰
+  options:
+    - Yes, I set 1 alarm
+    - Yes, I set multiple alarms
+    - No alarms!
+    - Someone else wakes me up
+
+- question: How do you pronounce the word "pecan"?
+  options:
+    - Pee-Can
+    - Pee-Con
+    - Puh-Con
+
+- question: Rock, paper, or scissors?
+  options:
+    - Rock 🪨
+    - Paper 🗞️
+    - Scissors ✂️
+
+- question: How often do you do laundry?
+  options:
+    - Daily
+    - Every few days
+    - Once a week
+    - Once a month
+    - When I run out of clean clothes
+
+- question: "When do you fill your car up with gas? When it's:"
+  options:
+    - Over half full
+    - Half Full
+    - Quarter tank
+    - Gas light is on
+    - Empty
+    - I have an electric car
+    - In this economy???
+
+- question: Oreos...what are you in for?
+  options:
+    - Cookie first
+    - Cream first
+    - Whole cookie
+    - I don't care for oreos
+
+- question: "Available jobs in the medieval court: which one are you applying for?"
+  options:
+    - Court Jester
+    - Executioner
+    - Apothecary
+    - Blacksmith
+    - Squire
+    - Cobbler
+
+- question: What TV gameshow would you want to be on? 🎥
+  options:
+    - The Price is Right
+    - Let's Make a Deal
+    - Wheel of Fortune
+    - Jeopardy
+    - Deal or No Deal
+    - Family Feud
+
+- question: You have to spend the rest of your life in one of these movie franchises. What's your pick?
+  additionalInstructions: Also include what your race, role, etc would be in your reasoning.
+  options:
+    - Lord of the Rings
+    - Star Wars
+
+- question: Were Ross and Rachel on a break?
+  options:
+    - Yes
+    - No
+    - Yes, but what Ross did was still wrong
+    - I haven't seen Friends
+
+- question: Backyard grill party! What are you eating?
+  options:
+    - Burger 🍔
+    - Brat 🌭
+    - Hot Dawgggg 🌭
+    - Chicken 🐓

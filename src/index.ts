@@ -49,7 +49,7 @@ async function main() {
   }
 
   // Step 5: Evaluate gaps — results are written to disk as they arrive
-  const tasks = findGaps(questions, models);
+  const tasks = findGaps(questions, models, yamlQuestions);
   await runEvaluations(dataset, tasks, saveDataSet);
 
   // Step 6: Final save — persists model metadata and updates generatedAt

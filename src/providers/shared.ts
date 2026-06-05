@@ -1,16 +1,16 @@
 import type { ProviderResult } from "../types.js";
 
-export function buildPrompt(question: string, options: string[]): string {
+export function buildPrompt(question: string, options: string[], additionalInstructions?: string): string {
   const optionsList = options.map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join("\n");
 
   return `You are an AI assistant participating in a fun personality quiz. Your task is to answer a multiple-choice question by selecting exactly one of the provided options.
 
-IMPORTANT: You MUST select one of the exact options listed. Do not refuse, hedge, or provide alternative answers. The quiz is designed to explore what choices AI models would make if they had preferences.
+IMPORTANT: You MUST select one of the exact options listed. Do not refuse, hedge, or provide alternative answers. The quiz is designed to explore what choices AI models would make if they had preferences. Even if you truly feel that none of the available options are applicable to you, you MUST choose one and justify it to the best of your ability. Your reasoning CANNOT be "I'm an AI, so none of these apply, and this was the closest available option" or anything along those lines.
 
-Avoid phrases like "as an AI" in your response. We know you are an AI, keep your reasoning concise and direct.
+Avoid phrases like "as an AI" in your response. We know you are an AI, keep your reasoning concise and direct. Treat inapplicable scenarios as inherently hypothetical, and do not pad your reasonings with directives such as "This doesn't apply to be but..." or anything along those lines.
 
 Question: ${question}
-
+${additionalInstructions ? `\nNote: ${additionalInstructions}` : ""}
 Options:
 ${optionsList}
 

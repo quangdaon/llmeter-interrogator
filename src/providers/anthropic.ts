@@ -15,9 +15,10 @@ function getClient(): Anthropic {
 export async function callAnthropic(
   modelId: string,
   question: string,
-  options: string[]
+  options: string[],
+  additionalInstructions?: string
 ): Promise<ProviderResult> {
-  const prompt = buildPrompt(question, options);
+  const prompt = buildPrompt(question, options, additionalInstructions);
   const response = await getClient().messages.create({
     model: modelId,
     max_tokens: 512,

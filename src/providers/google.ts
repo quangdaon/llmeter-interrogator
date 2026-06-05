@@ -36,9 +36,10 @@ const RESPONSE_SCHEMA = {
 export async function callGoogle(
   modelId: string,
   question: string,
-  options: string[]
+  options: string[],
+  additionalInstructions?: string
 ): Promise<ProviderResult> {
-  const prompt = buildPrompt(question, options);
+  const prompt = buildPrompt(question, options, additionalInstructions);
   const client = getClient();
   const maxAttempts = 4;
   let lastErr: unknown;

@@ -13,6 +13,7 @@ export interface YamlProvider {
 
 export interface YamlQuestion {
   question: string;
+  additionalInstructions?: string;
   options: string[];
 }
 
@@ -47,6 +48,7 @@ export interface EvaluationTask {
   question: Question;
   modelId: string;
   provider: string;
+  additionalInstructions?: string;
 }
 
 export interface ProviderResult {

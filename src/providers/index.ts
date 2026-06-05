@@ -8,17 +8,18 @@ export async function callProvider(
   provider: string,
   modelId: string,
   question: string,
-  options: string[]
+  options: string[],
+  additionalInstructions?: string
 ): Promise<ProviderResult> {
   switch (provider.toLowerCase()) {
     case 'openai':
-      return callOpenAI(modelId, question, options);
+      return callOpenAI(modelId, question, options, additionalInstructions);
     case 'anthropic':
-      return callAnthropic(modelId, question, options);
+      return callAnthropic(modelId, question, options, additionalInstructions);
     case 'gemini':
-      return callGoogle(modelId, question, options);
+      return callGoogle(modelId, question, options, additionalInstructions);
     case 'ollama':
-      return callOllama(modelId, question, options);
+      return callOllama(modelId, question, options, additionalInstructions);
     default:
       throw new Error(`Unknown provider: ${provider}`);
   }

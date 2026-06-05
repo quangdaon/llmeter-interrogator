@@ -15,9 +15,10 @@ function getClient(): OpenAI {
 export async function callOpenAI(
   modelId: string,
   question: string,
-  options: string[]
+  options: string[],
+  additionalInstructions?: string
 ): Promise<ProviderResult> {
-  const prompt = buildPrompt(question, options);
+  const prompt = buildPrompt(question, options, additionalInstructions);
   const response = await getClient().chat.completions.create({
     model: modelId,
     messages: [{ role: 'user', content: prompt }],
