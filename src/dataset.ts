@@ -52,6 +52,8 @@ export function saveDataSet(data: DataSet): void {
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+// Returns root models with their predecessors field intact.
+// Use expandModels to get the full flat list for questions.json.
 export function buildModels(providers: YamlProvider[]): Model[] {
   const models: Model[] = [];
   for (const provider of providers) {
@@ -62,10 +64,30 @@ export function buildModels(providers: YamlProvider[]): Model[] {
         provider: provider.provider,
         logo: m.logo ?? '/images/models/placeholder.png',
         color: m.color ?? '#888888',
+        ...(m.predecessors?.length && { predecessors: m.predecessors }),
       });
     }
   }
   return models;
+}
+
+// Expands root models into a flat list suitable for questions.json:
+// predecessor entries are emitted before their root, inheriting its logo/color.
+export function expandModels(models: Model[]): Model[] {
+  const result: Model[] = [];
+  for (const model of models) {
+    for (const pred of model.predecessors ?? []) {
+      result.push({
+        id: pred.id,
+        name: pred.name,
+        provider: model.provider,
+        logo: model.logo,
+        color: model.color,
+      });
+    }
+    result.push(model);
+  }
+  return result;
 }
 
 export function buildQuestions(
@@ -100,15 +122,17 @@ export function findGaps(
   }
 
   // For each provider, interleave: first model of each question, then second, etc.
+  if (models.length === 0) return gaps;
   const maxModels = Math.max(...Array.from(modelsByProvider.values()).map((ms) => ms.length));
 
   for (let modelIndex = 0; modelIndex < maxModels; modelIndex++) {
     for (const [, providerModels] of modelsByProvider) {
       if (modelIndex >= providerModels.length) continue;
       const model = providerModels[modelIndex];
+      const coveredIds = new Set([model.id, ...(model.predecessors?.map((p) => p.id) ?? [])]);
 
       for (const question of questions) {
-        const hasResponse = question.responses.some((r) => r.modelId === model.id);
+        const hasResponse = question.responses.some((r) => coveredIds.has(r.modelId));
         if (!hasResponse) {
           gaps.push({
             question,

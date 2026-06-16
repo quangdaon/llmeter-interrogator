@@ -1,7 +1,7 @@
 import { callProvider } from './providers/index.js';
 import { isProviderEnabled } from './config.js';
 import { logger } from './logger.js';
-import type { DataSet, Question, EvaluationTask } from './types.js';
+import type { DataSet, EvaluationTask } from './types.js';
 
 // Coalescing writer: if a write is already in progress, incoming requests set a
 // dirty flag instead of queuing individually. When the write finishes it checks
@@ -133,18 +133,3 @@ export async function runEvaluations(
   return dataset;
 }
 
-export function countGaps(
-  questions: Question[],
-  modelIds: string[]
-): { total: number; byModel: Record<string, number> } {
-  const byModel: Record<string, number> = {};
-  let total = 0;
-  for (const modelId of modelIds) {
-    const missing = questions.filter(
-      (q) => !q.responses.some((r) => r.modelId === modelId)
-    ).length;
-    byModel[modelId] = missing;
-    total += missing;
-  }
-  return { total, byModel };
-}

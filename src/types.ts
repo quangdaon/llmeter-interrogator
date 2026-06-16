@@ -1,8 +1,14 @@
+export interface YamlPredecessor {
+  id: string;
+  name: string;
+}
+
 export interface YamlModel {
   id: string;
   name: string;
   logo?: string;
   color?: string;
+  predecessors?: YamlPredecessor[];
 }
 
 export interface YamlProvider {
@@ -36,6 +42,7 @@ export interface Model {
   provider: string;
   logo: string;
   color: string;
+  predecessors?: YamlPredecessor[];
 }
 
 export interface DataSet {

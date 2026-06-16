@@ -5,11 +5,12 @@ import {
   loadDataSet,
   saveDataSet,
   buildModels,
+  expandModels,
   buildQuestions,
   findGaps,
 } from './dataset.js';
 import { ensureLogos, applyLogosToProviders } from './logos.js';
-import { runEvaluations, countGaps } from './evaluate.js';
+import { runEvaluations } from './evaluate.js';
 import { logger } from './logger.js';
 
 async function main() {
@@ -29,35 +30,41 @@ async function main() {
   logger.info('models.yml updated with logo paths');
 
   // Step 3: Build the working dataset
+  // rootModels drives gap-finding (predecessor-aware); expandedModels goes into questions.json
   logger.info('Loading existing dataset...');
   const existing = loadDataSet();
-  const models = buildModels(providers);
+  const rootModels = buildModels(providers);
+  const expandedModels = expandModels(rootModels);
   const questions = buildQuestions(yamlQuestions, existing);
-  const dataset = { ...existing, models, questions };
+  const dataset = { ...existing, models: expandedModels, questions };
 
-  // Step 4: Find all gaps
-  const allModelIds = models.map((m) => m.id);
-  const { total, byModel } = countGaps(questions, allModelIds);
+  // Step 4: Find all gaps (predecessor responses count as covered)
+  const tasks = findGaps(questions, rootModels, yamlQuestions);
 
-  if (total === 0) {
+  if (tasks.length === 0) {
     logger.success('All models have answered all questions. Nothing to do!');
   } else {
-    logger.info(`Found ${total} gap(s) across ${allModelIds.length} model(s):`);
+    const byModel: Record<string, number> = {};
+    for (const task of tasks) {
+      byModel[task.modelId] = (byModel[task.modelId] ?? 0) + 1;
+    }
+    logger.info(`Found ${tasks.length} gap(s) across ${rootModels.length} model(s):`);
     for (const [modelId, count] of Object.entries(byModel)) {
-      if (count > 0) logger.info(`  ${modelId}: ${count} missing`);
+      logger.info(`  ${modelId}: ${count} missing`);
     }
   }
 
   // Step 5: Evaluate gaps — results are written to disk as they arrive
-  const tasks = findGaps(questions, models, yamlQuestions);
   await runEvaluations(dataset, tasks, saveDataSet);
 
   // Step 6: Final save — persists model metadata and updates generatedAt
   saveDataSet(dataset);
-  logger.success(`Dataset written with ${questions.length} question(s), ${models.length} model(s)`);
+  logger.success(
+    `Dataset written with ${questions.length} question(s), ${expandedModels.length} model(s)`
+  );
 
   // Print final summary
-  const { total: remaining } = countGaps(dataset.questions, allModelIds);
+  const remaining = findGaps(dataset.questions, rootModels).length;
   if (remaining > 0) {
     logger.warn(
       `${remaining} gap(s) remain (skipped providers or failed calls). Run again to retry.`
