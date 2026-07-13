@@ -225,3 +225,23 @@
     - Brat 🌭
     - Hot Dawgggg 🌭
     - Chicken 🐓
+
+- question: Would you rather live in a treehouse or on a boat?
+  options:
+    - Treehouse
+    - Boat
+
+- question: Do you like going to the dentist?
+  options:
+    - Yes it's great! 🦷
+    - No....scary times 🫣
+
+- question: Would you rather wear a Dracula cape everywhere you go for a month or a pirate eye patch?
+  options:
+    - Dracula cape
+    - Eye patch
+
+- question: If you get a phone call from an unfamiliar number, are you answering? 📞
+  options:
+    - yes
+    - no

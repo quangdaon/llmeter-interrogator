@@ -85,7 +85,13 @@ export function expandModels(models: Model[]): Model[] {
         color: model.color,
       });
     }
-    result.push(model);
+    result.push({
+      id: model.id,
+      name: model.name,
+      provider: model.provider,
+      logo: model.logo,
+      color: model.color,
+    });
   }
   return result;
 }
