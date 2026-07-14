@@ -245,3 +245,55 @@
   options:
     - yes
     - no
+
+- question: For your phone, are you team apple or team android
+  options:
+    - Apple!
+    - Android!
+
+- question: If you buy food that says it's washed and ready to eat, are you....
+  options:
+    - Trusting it and eating it
+    - Washing it yourself before eating
+
+- question:  What is your preferred bedtime (eyes shut and going to sleep!)
+  options:
+    - 7-8pm
+    - 8-9pm
+    - 9-10pm
+    - 10-11pm
+    - 11-12am
+    - After midnight 🌚
+
+- question: Do you like spicy foods? 🔥
+  options:
+    - Yes
+    - No
+
+- question: "Toy Story Edition: Buzz or Woody, who are you playing with?"
+  options:
+    - Buzz 🚀
+    - Woody 🤠
+
+- question: If you’re by the ocean, would you swim in it?
+  options:
+    - Yes
+    - No
+    - I've never been to the ocean
+
+- question: Do you know how to juggle?
+  options:
+    - Yes
+    - No
+
+- question: Which Hogwarts house do you think you would be placed in?
+  options:
+    - Gryffindor
+    - Hufflepuff
+    - Ravenclaw
+    - Slytherin
+
+- question: Which is superior?
+  options:
+    - Qdoba
+    - Chipotle
